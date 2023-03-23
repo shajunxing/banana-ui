@@ -1,5 +1,5 @@
 require "luabanana"
-require "unifont"
+-- require "unifont"
 
 --[[
     恭喜发财
@@ -19,7 +19,10 @@ local screen_width, screen_height
 local start = 1
 
 local function fg(cp)
-    if (cp >= 0x21 and cp <= 0x2f) or (cp >= 0x3a and cp <= 0x40) or (cp >= 0x5b and cp <= 0x60) or (cp >= 0x7b and cp <= 0x7e) then
+    if
+        (cp >= 0x21 and cp <= 0x2f) or (cp >= 0x3a and cp <= 0x40) or (cp >= 0x5b and cp <= 0x60) or
+            (cp >= 0x7b and cp <= 0x7e)
+     then
         return 0xff00ff00
     elseif cp >= 0x30 and cp <= 0x39 then
         return 0xffffff00
@@ -34,11 +37,27 @@ local function write()
     local bg = 0xff000033
     banana_fill_whole_screen(bg)
     local y = 0
+    -- for i = start, numlines do
+    --     local line = lines[i]
+    --     local x = 0
+    --     for cp in extract_utf8str(line) do
+    --         local w = write_unichar_to_screen(cp, bg, fg(cp), x, y)
+    --         x = x + w
+    --         if x > screen_width then
+    --             break
+    --         end
+    --     end
+    --     i = i + 1
+    --     y = y + 16
+    --     if y > screen_height then
+    --         break
+    --     end
+    -- end
     for i = start, numlines do
         local line = lines[i]
         local x = 0
-        for cp in extract_utf8str(line) do
-            local w = write_unichar_to_screen(cp, bg, fg(cp), x, y)
+        for pos, cp in banana_next_unichar(line) do
+            local w, h = banana_write_unichar_to(cp, bg, fg(cp), nil, x, y)
             x = x + w
             if x > screen_width then
                 break
